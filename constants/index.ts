@@ -31,6 +31,7 @@ export type Question = {
   text: string;
   options: string[];
   correctOption: number;
+  marks:number;
 };
 
 export type SelectedAnswersType = {

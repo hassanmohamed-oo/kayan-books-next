@@ -66,7 +66,7 @@ const ExamPage = () => {
           })
           .catch(() => ({ data: { attempts: [] } })),
       ]);
-
+      
       setExams(examsResponse.data?.exams || []);
       setAttempts(attemptsResponse.data?.attempts || []);
     } catch (error: any) {

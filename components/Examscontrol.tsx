@@ -24,6 +24,7 @@ export  const Examscontrol = () => {
     text: "",
     options: ["", "", "", ""],
     correctOption: 0,
+    marks:10,
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [expandedExamId, setExpandedExamId] = useState<string | null>(null);
@@ -132,6 +133,7 @@ export  const Examscontrol = () => {
         text: "",
         options: ["", "", "", ""],
         correctOption: 0,
+        marks: 10,
       });
       setThisExamQuestionsID([
         ...thisExamQuestionsID,
