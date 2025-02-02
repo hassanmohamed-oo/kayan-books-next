@@ -1,5 +1,5 @@
 import Image from "next/image";
-export const Techoffers = () => {
+export default function Techoffers () {
   return (
     <div id="offers" className="min-h-screen  m-8 flex flex-col items-center py-12 px-4 md:px-20">
       <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-8 text-center">
