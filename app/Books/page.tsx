@@ -23,7 +23,7 @@ interface BookDetails {
   rating?: number;
 }
 
-export const Bookspage = () => {
+export const bookspage = () => {
   const [books, setBooks] = useState<BookDetails[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
