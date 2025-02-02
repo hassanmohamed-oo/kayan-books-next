@@ -1,10 +1,13 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+
 import Image from "next/image";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import Skeleton from "react-loading-skeleton";
+import { Type } from "react-feather";
+
 
 interface CartItem {
   _id: string;
@@ -68,7 +71,6 @@ export default function Bookspage() {
         }
       }
     } catch (error) {
-      toast.error("حدث خطأ في تحميل البيانات");
       console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
@@ -131,34 +133,34 @@ export default function Bookspage() {
     }
   };
 
-  // 🔎 شريط البحث والتصفية
-  const FilterBar = () => (
-    <div className="w-full max-w-6xl mx-auto px-4 mb-12 space-y-4">
-      <div className="relative">
-        <input
-          type="text"
-          placeholder="ابحث عن كتاب..."
-          className="w-full p-3 pr-12 rounded-xl border   focus:ring-blue-500"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          autoFocus={true}
-        />
+  interface FilterBarProps {
+    searchQuery: string;
+    setSearchQuery: (query: string) => void;
+  }
 
-        <i
-          key="search-icon"
-          className="fa-solid fa-magnifying-glass absolute right-4 top-4 text-gray-400"
-        />
-      </div>
+  const FilterBar = ({ searchQuery, setSearchQuery }: FilterBarProps) => {
 
-      <div className="flex flex-wrap gap-3">
-        <button
-          className={`px-4 py-2 rounded-full transition-colors ${"bg-blue-600 text-white"}`}
-        >
-          {"الكل"}
-        </button>
+
+    return (
+      <div className="w-full max-w-6xl mx-auto px-4 mb-12 space-y-4">
+        <div className="relative">
+          <input
+            type="text"
+            id="search"
+            className="w-full p-3 pr-12 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="ابحث عن كتاب..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            
+            
+         
+          />
+        
+          <i className="fa-solid fa-magnifying-glass absolute right-4 top-4 text-gray-400" />
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // 💎 تصميم بطاقة الكتاب
   const BookCard = ({ book }: { book: BookDetails }) => {
@@ -231,7 +233,7 @@ export default function Bookspage() {
   if (loading) {
     return (
       <div className="w-full max-w-6xl mx-auto px-4 py-12">
-        <FilterBar />
+        <FilterBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {[...Array(4)].map((_, i) => (
             <Skeleton key={i} className="aspect-[3/4] rounded-2xl" />
@@ -243,7 +245,7 @@ export default function Bookspage() {
 
   return (
     <section className="w-full min-h-screen py-12 ">
-      <FilterBar />
+      <FilterBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
       <div className="w-full max-w-6xl mx-auto px-4">
         {books.length === 0 ? (

@@ -59,7 +59,7 @@ export default function Techoffers () {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 ">
           <div className="flex flex-col items-center bg-white shadow-md rounded-lg p-6">
             <div className="w-16 h-16 mb-4 bg-blue-100 text-blue-600 flex items-center justify-center rounded-full">
-              <i className="fa-solid text-3xl fa-angle-down"></i>
+              <i className="fa-solid text-3xl  fa-angle-down"></i>
             </div>
             <h4 className="font-medium text-lg text-gray-800">خصومات حصرية</h4>
             <p className="text-gray-600 mt-2">

@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { UsersControl } from "@/components/UsersControl";
 import { User } from "@/constants";
-import { randomInt } from "crypto";
+
 
 function Page() {
   const [user, setUser] = useState<User | null>(null);
@@ -16,7 +17,31 @@ function Page() {
   const [books, setBooks] = useState<any[]>([]);
   const [exams, setExams] = useState<any[]>([]);
   const router = useRouter();
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+  const [users, setUsers] = useState<any[]>([]);
 
+  // Add fetch users function
+  const fetchUsers = useCallback(async () => {
+    setIsLoadingUsers(true);
+    try {
+      const token = Cookies.get("accessToken");
+      const response = await axios.get(
+        "https://e-book-kayan.vercel.app/api/users",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      );
+      setUsers(response.data.data);
+    } catch (error) {
+      toast.error("فشل في جلب المستخدمين");
+    } finally {
+      setIsLoadingUsers(false);
+    }
+  }, []);
+
+  // Update useEffect to fetch users
+  
   // Fetch user data
   const fetchUserData = useCallback(async () => {
     try {
@@ -99,18 +124,20 @@ function Page() {
       setIsLoadingExams(false);
     }
   }, []);
-
+  
+  useEffect(() => {
+    if (user) {
+      fetchBooks();
+      fetchExams();
+      fetchUsers();
+    }
+  }, [user, fetchBooks, fetchExams, fetchUsers]);
   // Fetch initial data
   useEffect(() => {
     fetchUserData();
   }, [fetchUserData]);
 
-  useEffect(() => {
-    if (user) {
-      fetchBooks();
-      fetchExams();
-    }
-  }, [user, fetchBooks, fetchExams]);
+ 
 
   // Loading state
   if (isLoadingUser) {
@@ -137,6 +164,7 @@ function Page() {
 
         {/* إحصائيات سريعة */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          
           <div className="bg-white bg-opacity-50 p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold text-gray-700">عدد الكتب</h2>
             <p className="text-3xl font-bold text-blue-500">
@@ -153,19 +181,24 @@ function Page() {
           </div>
           <div className="bg-white bg-opacity-50 p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold text-gray-700">
-              المستخدمين النشطين
+              عدد المستخدمين
             </h2>
-            <p className="text-3xl font-bold text-purple-500">{10}</p>
+            <p className="text-3xl font-bold text-purple-500">
+              {isLoadingUsers ? "جارٍ التحميل..." : users.length}
+            </p>
           </div>
         </div>
 
         {/* قسم المنتجات والامتحانات */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
           <div className="rounded-lg md:shadow-md">
             <BooksControl />
           </div>
           <div className="rounded-lg md:shadow-md">
             <Examscontrol />
+          </div>
+          <div className="rounded-lg md:shadow-md">
+            <UsersControl users={users} onRefresh={fetchUsers} />
           </div>
         </div>
       </div>
