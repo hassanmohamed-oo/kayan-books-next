@@ -40,7 +40,7 @@ const LoginPage = () => {
      const token = Cookies.get("accessToken"); // تحقق من وجود التوكن
      if (token) {
        // إذا كان التوكن موجودًا، أعد التوجيه للبروفايل
-       router.replace("/profile");
+       router.replace("/");
      }
    }, [router]);
 
@@ -176,3 +176,4 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+

@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 import { Navbar } from "@/components";
 import React, { useState, useEffect, useCallback } from "react";
 import { Exam, Question } from "@/constants";
-import { toast,ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { CheckCircle, Clock, AlertCircle } from "react-feather";
 
 type SelectedAnswers = {
@@ -18,7 +18,7 @@ interface Attempt {
   exam: {
     _id: string;
     title: string;
-  };
+  } | null; // السماح بقيم null
   score: number;
   submittedAt: string;
 }
@@ -37,8 +37,15 @@ const ExamPage = () => {
   const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch exams and attempts
-  const fetchData = useCallback(async () => {
+  const isExamCompleted = useCallback(
+    (examId: string) =>
+      attempts.some(
+        (attempt) => attempt.exam?._id === examId // استخدام optional chaining
+      ),
+    [attempts]
+  );
+
+    const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const token = Cookies.get("accessToken");
@@ -72,14 +79,6 @@ const ExamPage = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
-  // Check if exam is completed
-  const isExamCompleted = useCallback(
-    (examId: string) => attempts.some((attempt) => attempt.exam._id === examId),
-    [attempts]
-  );
-
-  // Exam flow handlers
   const handleExamSelect = (exam: Exam) => {
     if (isExamCompleted(exam._id)) {
       toast.error("لقد أكملت هذا الامتحان بالفعل");
@@ -94,7 +93,6 @@ const ExamPage = () => {
   };
 
   const startExam = () => setCurrentPage("exam");
-
   // Answer selection
   const handleAnswerSelect = (questionId: string, optionIndex: number) => {
     setSelectedAnswers((prev) => [
@@ -169,7 +167,7 @@ const ExamPage = () => {
       <Navbar />
       <ToastContainer />
       <main className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Exams List */}
+        {/* قائمة الامتحانات */}
         {currentPage === "exams" && (
           <section className="space-y-8">
             <h1 className="text-3xl font-bold text-gray-800 text-center mb-8">
@@ -216,7 +214,7 @@ const ExamPage = () => {
               </div>
             )}
 
-            {/* Previous Attempts */}
+            {/* المحاولات السابقة */}
             <section className="mt-12">
               <h2 className="text-2xl font-bold text-gray-800 mb-6">
                 المحاولات السابقة
@@ -235,7 +233,7 @@ const ExamPage = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <h3 className="font-medium text-gray-800">
-                            {attempt.exam.title}
+                            {attempt.exam?.title || "امتحان محذوف"} 
                           </h3>
                           <time className="text-sm text-gray-500">
                             {new Date(attempt.submittedAt).toLocaleDateString(
@@ -255,7 +253,7 @@ const ExamPage = () => {
           </section>
         )}
 
-        {/* Instructions Page */}
+      {/* Instructions Page */}
         {currentPage === "instructions" && selectedExam && (
           <section className="max-w-2xl mx-auto text-center">
             <h1 className="text-3xl font-bold text-gray-800 mb-8">
@@ -435,8 +433,7 @@ const ExamPage = () => {
               العودة إلى قائمة الامتحانات
             </button>
           </section>
-        )}
-      </main>
+        )}   </main>
     </div>
   );
 };
