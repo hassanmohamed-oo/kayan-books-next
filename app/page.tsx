@@ -1,5 +1,5 @@
 "use client"
-import { Footer,  Landing, bookspage , Techoffers} from "@/components";
+import { Footer,  Landing, Bookspage , Techoffers} from "@/components";
 import { ToastContainer } from "react-toastify";
 
 
@@ -8,7 +8,7 @@ export default function Home() {
     <>
       <ToastContainer />
       <Landing />
-      <bookspage />
+      <Bookspage />
       <Techoffers />
       <Footer />
     </>

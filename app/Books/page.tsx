@@ -23,7 +23,7 @@ interface BookDetails {
   rating?: number;
 }
 
-export const bookspage = () => {
+export default function Bookspage() {
   const [books, setBooks] = useState<BookDetails[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -31,105 +31,105 @@ export const bookspage = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   // 🔄 جلب البيانات
- useEffect(() => {
-   fetchData();
- }, [searchQuery]);
+  useEffect(() => {
+    fetchData();
+  }, [searchQuery]);
 
- const fetchData = async () => {
-   try {
-     const token = Cookies.get("accessToken");
+  const fetchData = async () => {
+    try {
+      const token = Cookies.get("accessToken");
 
-     const booksRes = await axios.get(
-       "https://e-book-kayan.vercel.app/api/books",
-       {
-         params: {
-           limit: 12,
-           page: 1,
-           search: searchQuery,
-         },
-       }
-     );
+      const booksRes = await axios.get(
+        "https://e-book-kayan.vercel.app/api/books",
+        {
+          params: {
+            limit: 12,
+            page: 1,
+            search: searchQuery,
+          },
+        }
+      );
 
-     setBooks(booksRes.data.data);
+      setBooks(booksRes.data.data);
 
-     if (token) {
-       try {
-         const cartRes = await axios.get(
-           "https://e-book-kayan.vercel.app/api/cart",
-           {
-             headers: {
-               Authorization: `Bearer ${token}`,
-             },
-           }
-         );
-         setCartItems(cartRes.data.data.cartItems);
-       } catch (error) {
-         console.error("Error fetching cart:", error);
-       }
-     }
-   } catch (error) {
-     toast.error("حدث خطأ في تحميل البيانات");
-     console.error("Error fetching data:", error);
-   } finally {
-     setLoading(false);
-   }
- };
+      if (token) {
+        try {
+          const cartRes = await axios.get(
+            "https://e-book-kayan.vercel.app/api/cart",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          setCartItems(cartRes.data.data.cartItems);
+        } catch (error) {
+          console.error("Error fetching cart:", error);
+        }
+      }
+    } catch (error) {
+      toast.error("حدث خطأ في تحميل البيانات");
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // 🛒 إدارة السلة
-   const toggleCart = async (bookId: string) => {
-     const token = Cookies.get("accessToken");
-     if (!token) {
-       toast.error("يجب تسجيل الدخول أولاً");
-       return;
-     }
+  const toggleCart = async (bookId: string) => {
+    const token = Cookies.get("accessToken");
+    if (!token) {
+      toast.error("يجب تسجيل الدخول أولاً");
+      return;
+    }
 
-     setProcessingItems((prev) => [...prev, bookId]);
+    setProcessingItems((prev) => [...prev, bookId]);
 
-     try {
-       const existingItem = cartItems.find((item) => item.book === bookId);
+    try {
+      const existingItem = cartItems.find((item) => item.book === bookId);
 
-       if (existingItem) {
-         // 🚀 إزالة العنصر من السلة
-         await axios.delete(
-           `https://e-book-kayan.vercel.app/api/cart/${existingItem._id}`,
-           {
-             headers: { Authorization: `Bearer ${token}` },
-             withCredentials: true,
-           }
-         );
-         // ✅ تحديث القائمة بدون Refresh
-         setCartItems((prev) =>
-           prev.filter((item) => item._id !== existingItem._id)
-         );
-         toast.success("تم الإزالة من السلة");
-       } else {
-         // 🚀 إضافة العنصر إلى السلة
-         const response = await axios.post(
-           "https://e-book-kayan.vercel.app/api/cart/",
-           { id: bookId },
-           {
-             headers: { Authorization: `Bearer ${token}` },
-           }
-         );
+      if (existingItem) {
+        // 🚀 إزالة العنصر من السلة
+        await axios.delete(
+          `https://e-book-kayan.vercel.app/api/cart/${existingItem._id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          }
+        );
+        // ✅ تحديث القائمة بدون Refresh
+        setCartItems((prev) =>
+          prev.filter((item) => item._id !== existingItem._id)
+        );
+        toast.success("تم الإزالة من السلة");
+      } else {
+        // 🚀 إضافة العنصر إلى السلة
+        const response = await axios.post(
+          "https://e-book-kayan.vercel.app/api/cart/",
+          { id: bookId },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
-         const newItem: CartItem = {
-           _id: response.data.cartItem?._id || "",
-           book: bookId,
-           price: response.data.cartItem?.price || 0,
-           quantity: response.data.cartItem?.quantity || 1,
-         };
+        const newItem: CartItem = {
+          _id: response.data.cartItem?._id || "",
+          book: bookId,
+          price: response.data.cartItem?.price || 0,
+          quantity: response.data.cartItem?.quantity || 1,
+        };
 
-         // ✅ تحديث القائمة بدون Refresh
-         setCartItems((prev) => [...prev, newItem]);
-         toast.success("تمت الإضافة إلى السلة");
-       }
-     } catch (error: any) {
-       toast.error("فشلت العملية");
-       console.error("Error:", error.response?.data || error.message);
-     } finally {
-       setProcessingItems((prev) => prev.filter((id) => id !== bookId));
-     }
-   };
+        // ✅ تحديث القائمة بدون Refresh
+        setCartItems((prev) => [...prev, newItem]);
+        toast.success("تمت الإضافة إلى السلة");
+      }
+    } catch (error: any) {
+      toast.error("فشلت العملية");
+      console.error("Error:", error.response?.data || error.message);
+    } finally {
+      setProcessingItems((prev) => prev.filter((id) => id !== bookId));
+    }
+  };
 
   // 🔎 شريط البحث والتصفية
   const FilterBar = () => (
@@ -166,9 +166,8 @@ export const bookspage = () => {
     const isProcessing = processingItems.includes(book._id);
 
     return (
-      
       <div className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
-        <ToastContainer/>
+        <ToastContainer />
         <div className="relative aspect-[4/3]">
           <Image
             src={book.image.url}
