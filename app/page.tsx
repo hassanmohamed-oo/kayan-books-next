@@ -1,6 +1,7 @@
 "use client"
-import { Footer,  Landing, Bookspage , Techoffers} from "@/components";
+import { Footer,  Landing , Techoffers} from "@/components";
 import { ToastContainer } from "react-toastify";
+import Bookspage from "@/app/books/page";
 
 
 export default function Home() {
